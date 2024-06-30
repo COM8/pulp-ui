@@ -1,0 +1,31 @@
+name: Flatpak
+
+on:
+  workflow_dispatch:
+
+jobs:
+  flatpak:
+    name: "Flatpak"
+    runs-on: ubuntu-latest
+    container:
+      image: bilelmoussaoui/flatpak-github-actions:gnome-43
+      options: --privileged
+    strategy:
+      matrix:
+        arch: [x86_64, aarch64]
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install deps
+      run: |
+        dnf -y install docker
+    - name: Set up QEMU
+      id: qemu
+      uses: docker/setup-qemu-action@v2.1.0
+      with:
+        platforms: arm64
+    - uses: flatpak/flatpak-github-actions/flatpak-builder@v6.1
+      with:
+        bundle: de.pulp-ui.cli.flatpak
+        manifest-path: de.pulp-ui.cli.yml
+        arch: ${{ matrix.arch }}

@@ -1,0 +1,205 @@
+app-id: de.pulp-ui.cli
+runtime: org.gnome.Platform
+runtime-version: "43"
+sdk: org.gnome.Sdk
+command: pulp-ui
+finish-args:
+  - --share=ipc
+  - --socket=fallback-x11
+  - --socket=wayland
+  - --socket=session-bus
+  - --share=network
+  - --own-name=de.pulp-ui.cli
+  - --device=dri
+  - --filesystem=home
+  - --filesystem=host
+  - --filesystem=/sys/class/backlight/rpi_backlight
+modules:
+  - name: pulp-ui
+    buildsystem: cmake-ninja
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DPULP_UI_STATIC_ANALYZE=OFF
+      - -DPULP_UI_ENABLE_LINTING=OFF
+      - -DPULP_UI_FLATPAK_BUILD=ON
+    sources:
+      - type: dir
+        path: .
+    post-install:
+      - install -D de.pulp-ui.cli.appdata.xml /app/share/metainfo/de.pulp-ui.cli.appdata.xml
+    modules:
+      - name: cpr
+        buildsystem: cmake-ninja
+        config-opts:
+          - -DCPR_USE_SYSTEM_CURL=ON
+        sources:
+          - type: git
+            url: https://github.com/libcpr/cpr.git
+            commit: 6b3e3531d3e5781b4b19e7cf64ed76035bf59d37
+        cleanup:
+          - /include
+        modules:
+          - name: curl
+            buildsystem: cmake-ninja
+            config-opts:
+              - -DCURL_ENABLE_SSL=ON
+              - -DCURL_USE_OPENSSL=ON
+              - -DBUILD_TESTING=OFF
+              - -DBUILD_CURL_EXE=OFF
+              - -DENABLE_WEBSOCKETS=ON
+            sources:
+              - type: git
+                url: https://github.com/curl/curl.git
+                tag: curl-8_4_0
+                commit: d755a5f7c009dd63a61b2c745180d8ba937cbfeb
+      - name: nlohmann-json
+        buildsystem: cmake-ninja
+        config-opts:
+          - -DCMAKE_BUILD_TYPE=Release
+          - -DJSON_BuildTests=OFF
+        sources:
+          - type: git
+            url: https://github.com/nlohmann/json.git
+            tag: v3.11.2
+            commit: bc889afb4c5bf1c0d8ee29ef35eaaf4c8bef8a5d
+      - name: spdlog
+        buildsystem: cmake-ninja
+        config-opts:
+          - -DCMAKE_BUILD_TYPE=Release
+          - -DSPDLOG_BUILD_EXAMPLE=OFF
+          - -DSPDLOG_BUILD_TESTS=OFF
+          - -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+        sources:
+          - type: git
+            url: https://github.com/gabime/spdlog.git
+            tag: v1.12.0
+            commit: 7e635fca68d014934b4af8a1cf874f63989352b7
+      - name: eventpp
+        buildsystem: cmake-ninja
+        config-opts:
+          - -DCMAKE_BUILD_TYPE=Release
+          - -DUSE_TLS=ON
+        sources:
+          - type: git
+            url: https://github.com/wqking/eventpp.git
+            tag: v0.1.3
+            commit: d2db8af2a46c79f8dc75759019fba487948e9442
+      - name: re2
+        buildsystem: cmake-ninja
+        config-opts:
+          - -DCMAKE_BUILD_TYPE=Release
+          - -DRE2_BUILD_TESTING=OFF
+        sources:
+          - type: git
+            url: https://github.com/google/re2.git
+            tag: "2023-11-01"
+            commit: bc0faab533e2b27b85b8ad312abf061e33ed6b5d
+        modules:
+          - name: abseil
+            buildsystem: cmake-ninja
+            config-opts:
+              - -DCMAKE_BUILD_TYPE=Release
+              - -DABSL_BUILD_TESTING=OFF
+              - -DABSL_ENABLE_INSTALL=ON
+            sources:
+              - type: git
+                url: https://github.com/abseil/abseil-cpp.git
+                tag: 20230802.1
+                commit: fb3621f4f897824c0dbe0615fa94543df6192f30
+      - name: shumate
+        buildsystem: meson
+        config-opts:
+          - -Dgtk_doc=false
+        sources:
+          - type: archive
+            url: https://download.gnome.org/sources/libshumate/1.1/libshumate-1.1.1.tar.xz
+            sha256: 37ac753c79410aaa1e57f4c051701b06f40991c418fb511aedc11a79b790fc04
+        cleanup:
+          - /include
+      - name: date
+        buildsystem: cmake-ninja
+        config-opts:
+          - -DCMAKE_BUILD_TYPE=Release
+          - -DBUILD_TZ_LIB=ON
+        sources:
+          - type: git
+            url: https://github.com/HowardHinnant/date.git
+            commit: cc4685a21e4a4fdae707ad1233c61bbaff241f93
+      - name: gtkmm
+        buildsystem: meson
+        config-opts:
+          - -Dbuild-documentation=false
+          - -Dbuild-demos=false
+          - -Dbuild-tests=false
+        sources:
+          - type: archive
+            url: https://download.gnome.org/sources/gtkmm/4.8/gtkmm-4.8.0.tar.xz
+            sha256: c82786d46e2b07346b6397ca7f1929d952f4922fa5c9db3dee08498b9a136cf5
+        cleanup:
+          - /include
+        modules:
+          - name: cairomm
+            buildsystem: meson
+            config-opts:
+              - -Dbuild-documentation=false
+              - -Dbuild-examples=false
+              - -Dbuild-tests=false
+            sources:
+              - type: git
+                url: https://gitlab.freedesktop.org/cairo/cairomm.git
+                tag: 1.16.2
+                commit: 9dcaeb7af1620ed509bd471a0c8b27aff459178c
+            cleanup:
+              - /include
+            modules:
+              - name: sigc++-3.0
+                buildsystem: meson
+                config-opts:
+                  - -Dbuild-documentation=false
+                  - -Dbuild-examples=false
+                  - -Dbenchmark=false
+                  - -Dvalidation=false
+                  - -Dbuild-pdf=false
+                sources:
+                  - type: git
+                    url: https://github.com/libsigcplusplus/libsigcplusplus.git
+                    tag: 3.4.0
+                    commit: e88e319aa50df010320dd15e7c802f92752dc8dc
+                cleanup:
+                  - /include
+                modules:
+                  - name: mm-common
+                    buildsystem: meson
+                    config-opts:
+                      - -Duse-network=false
+                    sources:
+                      - type: archive
+                        url: https://download.gnome.org/sources/mm-common/1.0/mm-common-1.0.5.tar.xz
+                        sha256: 705c6d29f4116a29bde4e36cfc1b046c92b6ef8c6dae4eaec85018747e6da5aa
+                    cleanup:
+                      - /include
+          - name: pangomm
+            buildsystem: meson
+            config-opts:
+              - -Dbuild-documentation=false
+            sources:
+              - type: git
+                url: https://gitlab.gnome.org/GNOME/pangomm.git
+                tag: 2.50.1
+                commit: 7083b4deaa6401bf1f5b771752a46632ecc8d303
+            cleanup:
+              - /include
+            modules:
+              - name: glibmm
+                buildsystem: meson
+                config-opts:
+                  - -Dbuild-documentation=false
+                  - -Dbuild-examples=false
+                  - -Ddebug-refcounting=false
+                sources:
+                  - type: git
+                    url: https://gitlab.gnome.org/GNOME/glibmm.git
+                    tag: 2.74.0
+                    commit: ca716cab5075a3cfeb59fd1f1f3d38b422619293
+                cleanup:
+                  - /include
