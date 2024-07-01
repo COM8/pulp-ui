@@ -1,5 +1,8 @@
 #pragma once
 
+#include "ui/widgets/core/ConnectivityWidget.hpp"
+#include "ui/widgets/rpm/RepoListWidget.hpp"
+#include "ui/widgets/rpm/RpmListWidget.hpp"
 #include <gdkmm/enums.h>
 #include <glib/gtypes.h>
 #include <gtkmm.h>
@@ -18,6 +21,10 @@ class MainWindow : public Gtk::Window {
     Gtk::StackSidebar sidebar{};
     Gtk::Stack stack{};
 
+    widgets::core::ConnectivityWidget connectivityWidget{};
+    widgets::rpm::RpmListWidget rpmListWidget{};
+    widgets::rpm::RepoListWidget repoListWidget{};
+
  public:
     MainWindow();
     MainWindow(MainWindow&&) = delete;
@@ -28,6 +35,7 @@ class MainWindow : public Gtk::Window {
 
  private:
     void prep_window();
+    void prep_stack();
     void toggle_fullscreen();
 
     //-----------------------------Events:-----------------------------

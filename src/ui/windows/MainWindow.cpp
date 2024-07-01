@@ -67,6 +67,7 @@ void MainWindow::prep_window() {
     headerBar->pack_start(splitViewBtn);
 
     sidebar.set_stack(stack);
+    prep_stack();
 
     splitView = adw_overlay_split_view_new();
     AdwOverlaySplitView* splitVIewType = ADW_OVERLAY_SPLIT_VIEW(splitView);
@@ -75,6 +76,17 @@ void MainWindow::prep_window() {
     set_child(*Glib::wrap(splitView));
 
     set_titlebar(*headerBar);
+}
+
+void MainWindow::prep_stack() {
+    Glib::RefPtr<Gtk::StackPage> connectivityPage = stack.add(connectivityWidget, "connectivity", "Connectivity");
+    connectivityPage->set_icon_name("cloud-outline-thin-symbolic");
+
+    Glib::RefPtr<Gtk::StackPage> rpmRepoListPage = stack.add(repoListWidget, "rpm-repo-list", "RPM Repositories");
+    rpmRepoListPage->set_icon_name("list-compact-symbolic");
+
+    Glib::RefPtr<Gtk::StackPage> rpmListPage = stack.add(rpmListWidget, "rpm-packages-list", "RPM Packages");
+    rpmListPage->set_icon_name("package-x-generic-symbolic");
 }
 
 void MainWindow::toggle_fullscreen() {

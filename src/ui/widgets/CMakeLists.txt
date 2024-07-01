@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.27)
 
+add_subdirectory(core)
+add_subdirectory(rpm)
+
 add_library(ui_widgets)
 add_library(ui::widgets ALIAS ui_widgets)
 

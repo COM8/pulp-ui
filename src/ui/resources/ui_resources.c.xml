@@ -3,5 +3,8 @@
   <gresource prefix="/de/pulp-ui/cli/">
     <file>theme.css</file>
     <file preprocess="xml-stripblanks">icons/scalable/actions/dock-left-symbolic.svg</file>
+    <file preprocess="xml-stripblanks">icons/scalable/actions/cloud-outline-thin-symbolic.svg</file>
+    <file preprocess="xml-stripblanks">icons/scalable/actions/list-compact-symbolic.svg</file>
+    <file preprocess="xml-stripblanks">icons/scalable/actions/package-x-generic-symbolic.svg</file>
   </gresource>
 </gresources>
