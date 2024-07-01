@@ -1,7 +1,15 @@
 #include "MainWindow.hpp"
+#include <adwaita.h>
 #include <gdkmm/enums.h>
+#include <giomm/menu.h>
+#include <giomm/menuitem.h>
+#include <giomm/menumodel.h>
+#include <giomm/simpleactiongroup.h>
 #include <glib/gtypes.h>
+#include <glibmm/refptr.h>
 #include <gtkmm.h>
+#include <gtkmm/label.h>
+#include <gtkmm/popovermenu.h>
 #include <gtkmm/window.h>
 #include <spdlog/spdlog.h>
 
@@ -29,42 +37,96 @@ void MainWindow::prep_window() {
     // Header bar:
     Gtk::HeaderBar* headerBar = Gtk::make_managed<Gtk::HeaderBar>();
 
-    // inspectorBtn.set_label("🐞");
-    // inspectorBtn.set_tooltip_text("Inspector");
-    // inspectorBtn.signal_clicked().connect(&MainWindow::on_inspector_clicked);
-    // headerBar->pack_end(inspectorBtn);
+    headerMoreBtn.set_icon_name("view-more");
+    headerMoreBtn.set_tooltip_text("More");
+    Glib::RefPtr<Gio::Menu> menu = Gio::Menu::create();
+
+    menu->append("⚙️ Settings", "app.settings");
+    menu->append("🐞 Inspector", "app.inspector");
+    menu->append("↔️ Fullscreen", "app.fullscreen");
+    menu->append("ℹ️ About", "app.about");
+    headerMoreBtn.set_menu_model(menu);
+    headerBar->pack_end(headerMoreBtn);
+
+    // Menu item actions
+    Glib::RefPtr<Gio::SimpleActionGroup> actionGroup = Gio::SimpleActionGroup::create();
+    auto add_action = [&](const Glib::ustring& name) {
+        Glib::RefPtr<Gio::SimpleAction> action = Gio::SimpleAction::create(name);
+        action->signal_activate().connect(sigc::bind(sigc::mem_fun(*this, &MainWindow::on_menu_item_activated), name));
+        actionGroup->add_action(action);
+    };
+    add_action("settings");
+    add_action("inspector");
+    add_action("fullscreen");
+    add_action("about");
+    insert_action_group("app", actionGroup);
+
+    splitViewBtn.set_image_from_icon_name("dock-left-symbolic");
+    splitViewBtn.set_tooltip_text("Show/Hide split view");
+    splitViewBtn.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_toggle_split_view_clicked), false);
+    headerBar->pack_start(splitViewBtn);
+
+    sidebar.set_stack(stack);
+
+    splitView = adw_overlay_split_view_new();
+    AdwOverlaySplitView* splitVIewType = ADW_OVERLAY_SPLIT_VIEW(splitView);
+    adw_overlay_split_view_set_sidebar(splitVIewType, GTK_WIDGET(sidebar.gobj()));
+    adw_overlay_split_view_set_content(splitVIewType, GTK_WIDGET(stack.gobj()));
+    set_child(*Glib::wrap(splitView));
 
     set_titlebar(*headerBar);
 }
 
-//-----------------------------Events:-----------------------------
-void MainWindow::on_inspector_clicked() {
-    gtk_window_set_interactive_debugging(true);
-}
-
-void MainWindow::on_toggle_full_screen_clicked() {
+void MainWindow::toggle_fullscreen() {
     if (property_fullscreened().get_value()) {
         unfullscreen();
+        SPDLOG_INFO("Unfullscreen.");
     } else {
         fullscreen();
+        SPDLOG_INFO("Fullscreen.");
     }
-};
+}
+
+//-----------------------------Events:-----------------------------
+void MainWindow::on_toggle_split_view_clicked() {
+    AdwOverlaySplitView* splitVIewType = ADW_OVERLAY_SPLIT_VIEW(splitView);
+    adw_overlay_split_view_set_collapsed(splitVIewType, !adw_overlay_split_view_get_collapsed(splitVIewType));
+}
 
 bool MainWindow::on_key_pressed(guint keyVal, guint /*keyCode*/, Gdk::ModifierType /*modifier*/) {
     if (keyVal == GDK_KEY_Escape && property_fullscreened().get_value()) {
         unfullscreen();
-        maximize();
         return true;
     }
     if (keyVal == GDK_KEY_F11) {
-        if (property_fullscreened().get_value()) {
-            unfullscreen();
-            maximize();
-        } else {
-            fullscreen();
-        }
+        toggle_fullscreen();
         return true;
     }
     return false;
+}
+
+void MainWindow::on_menu_item_activated(const Glib::VariantBase& /*actionVariant*/, const Glib::ustring& actionName) {
+    SPDLOG_DEBUG("Menu item action invoked: {0}", actionName.c_str());
+
+    if (actionName == "settings") {
+        // TODO: Show settings window
+        return;
+    }
+
+    if (actionName == "inspector") {
+        gtk_window_set_interactive_debugging(true);
+        SPDLOG_INFO("Inspector shown.");
+        return;
+    }
+
+    if (actionName == "fullscreen") {
+        toggle_fullscreen();
+        return;
+    }
+
+    if (actionName == "about") {
+        // TODO: Show about window
+        return;
+    }
 }
 }  // namespace ui::windows

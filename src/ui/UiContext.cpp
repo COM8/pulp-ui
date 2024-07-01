@@ -1,5 +1,6 @@
 #include "UiContext.hpp"
 #include <adwaita.h>
+#include <gtkmm/icontheme.h>
 
 namespace ui {
 int UiContext::run(int argc, char** argv) {
@@ -10,7 +11,7 @@ int UiContext::run(int argc, char** argv) {
     app = Gtk::Application::create("de.pulp-ui.cli");
 
     // Add icon paths:
-    Gtk::IconTheme::get_for_display(Gdk::Display::get_default())->add_resource_path("/ui/icons/scalable/action");
+    Gtk::IconTheme::get_for_display(Gdk::Display::get_default())->add_resource_path("/de/pulp-ui/cli/icons/scalable/actions");
 
     app->signal_startup().connect([&] {
         add_main_window();
