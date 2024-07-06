@@ -48,6 +48,13 @@ void SettingsWidget::prep_widget() {
     contentBox->append(*pulpRemoteLabel);
     pulpRemote.set_placeholder_text("https://example.com:8080");
     contentBox->append(pulpRemote);
+    Gtk::Box* remoteOptions = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::HORIZONTAL);
+    verifyHost.set_label("Verify Host");
+    remoteOptions->append(verifyHost);
+    verifyPeer.set_label("Verify Peer");
+    verifyPeer.set_margin_start(10);
+    remoteOptions->append(verifyPeer);
+    contentBox->append(*remoteOptions);
 
     Gtk::Label* pulpUsernameLabel = Gtk::make_managed<Gtk::Label>();
     pulpUsernameLabel->set_text("Username:");
@@ -68,9 +75,14 @@ void SettingsWidget::prep_widget() {
 void SettingsWidget::load_settings() {
     SPDLOG_INFO("Loading settings...");
     const backend::storage::SettingsData* settings = &(backend::storage::get_settings_instance()->data);
+
     pulpRemote.set_text(settings->pulp.remote);
+    verifyHost.set_active(settings->pulp.verifyHost);
+    verifyPeer.set_active(settings->pulp.verifyPeer);
+
     pulpUsername.set_text(settings->pulp.username);
     pulpPassword.set_text(settings->pulp.password);
+
     SPDLOG_INFO("Settings loaded.");
 }
 
@@ -79,6 +91,9 @@ void SettingsWidget::save_settings() {
     backend::storage::SettingsData* settings = &(backend::storage::get_settings_instance()->data);
 
     settings->pulp.remote = pulpRemote.get_text();
+    settings->pulp.verifyHost = verifyHost.get_active();
+    settings->pulp.verifyPeer = verifyPeer.get_active();
+
     settings->pulp.username = pulpUsername.get_text();
     settings->pulp.password = pulpPassword.get_text();
 

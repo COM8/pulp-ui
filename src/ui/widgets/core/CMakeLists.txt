@@ -9,5 +9,5 @@ target_sources(ui_widgets_core PRIVATE ConnectivityWidget.cpp
     BASE_DIRS ${PROJECT_SOURCE_DIR}/src
     FILES ${CMAKE_CURRENT_SOURCE_DIR}/ConnectivityWidget.hpp)
 
-target_link_libraries(ui_widgets_core PUBLIC PkgConfig::GTKMM
-    PRIVATE logger backend::pulp)
+target_link_libraries(ui_widgets_core PUBLIC PkgConfig::GTKMM backend::pulp::core
+    PRIVATE logger)

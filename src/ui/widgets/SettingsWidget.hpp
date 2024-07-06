@@ -1,6 +1,7 @@
 #pragma once
 
 #include <gtkmm.h>
+#include <gtkmm/checkbutton.h>
 #include <gtkmm/entry.h>
 #include <gtkmm/passwordentry.h>
 
@@ -10,6 +11,8 @@ class SettingsWidget : public Gtk::Box {
     Gtk::Entry pulpRemote;
     Gtk::Entry pulpUsername;
     Gtk::PasswordEntry pulpPassword;
+    Gtk::CheckButton verifyHost;
+    Gtk::CheckButton verifyPeer;
 
  public:
     SettingsWidget();

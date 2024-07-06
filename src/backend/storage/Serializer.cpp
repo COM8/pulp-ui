@@ -6,12 +6,15 @@
 namespace backend::storage {
 void to_json(nlohmann::json& j, const SettingsData& d) {
     j = nlohmann::json{
-        {"pulp", {{"remote", d.pulp.remote}, {"username", d.pulp.username}, {"password", d.pulp.password}}}};
+        {"pulp", {{"remote", d.pulp.remote}, {"verifyPeer", d.pulp.verifyPeer}, {"verifyHost", d.pulp.verifyHost}, {"username", d.pulp.username}, {"password", d.pulp.password}}}};
 }
 
 void from_json(const nlohmann::json& j, SettingsData& d) {
     nlohmann::json jPulp = j.at("pulp");
     jPulp.at("remote").get_to(d.pulp.remote);
+    jPulp.at("verifyHost").get_to(d.pulp.verifyHost);
+    jPulp.at("verifyPeer").get_to(d.pulp.verifyPeer);
+
     jPulp.at("username").get_to(d.pulp.username);
     jPulp.at("password").get_to(d.pulp.password);
 }

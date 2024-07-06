@@ -106,6 +106,10 @@ else()
         GIT_TAG 1ead6715dec030d340a316c927c877a3c4e5a00c)
     FetchContent_MakeAvailable(date)
 
+    FetchContent_Declare(fmt GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+        GIT_TAG 11.0.1)
+    FetchContent_MakeAvailable(fmt)
+
     FetchContent_Declare(eventpp
         GIT_REPOSITORY https://github.com/wqking/eventpp.git
         GIT_TAG v0.1.3)

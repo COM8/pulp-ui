@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.27)
 
+add_subdirectory(core)
+
 add_library(backend_pulp)
 add_library(backend::pulp ALIAS backend_pulp)
 
