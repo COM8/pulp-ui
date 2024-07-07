@@ -62,8 +62,8 @@ void ConnectionStatus::thread_run() {
             continue;
         }
 
-        std::optional<StatusResponse> response = check_connectivity();
-        if (response) {
+        lastStatusResponse = check_connectivity();
+        if (lastStatusResponse) {
             set_status(Status::CONNECTED);
         } else {
             set_status(Status::FAILED);
@@ -95,13 +95,9 @@ void ConnectionStatus::set_status(Status newStatus) {
         lastSuccessfulConnection = std::chrono::system_clock::now();
     }
 
-    if (status != newStatus) {
-        status = newStatus;
-
-        // Invoke the event handler:
-        if (statusChanged) {
-            statusChanged(newStatus);
-        }
+    // Invoke the event handler:
+    if (statusChanged) {
+        statusChanged(newStatus);
     }
 }
 

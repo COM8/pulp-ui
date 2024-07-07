@@ -1,6 +1,10 @@
 #include "ConnectionStatusWidget.hpp"
 #include "backend/pulp/core/ConnectionStatus.hpp"
+#include "fmt/format.h"
+#include "spdlog/fmt/bundled/core.h"
 #include <chrono>
+#include <cmath>
+#include <adwaita.h>
 #include <bits/chrono.h>
 #include <fmt/chrono.h>
 #include <fmt/core.h>
@@ -19,8 +23,15 @@ void ConnectionStatusWidget::prep_widget() {
     mainBox.set_margin(10);
     set_child(mainBox);
 
-    statusDescriptionLabel.set_markup("<span weight='bold'>Connection Status</span>");
-    mainBox.append(statusDescriptionLabel);
+    // Connection Status
+    connectionStatusGroup = adw_preferences_group_new();
+    AdwPreferencesGroup* connectionStatusGroupType = ADW_PREFERENCES_GROUP(connectionStatusGroup);
+    adw_preferences_group_set_title(connectionStatusGroupType, "Connection Status");
+    mainBox.append(*Glib::wrap(connectionStatusGroup));
+
+    connectionStatusListBox.set_selection_mode(Gtk::SelectionMode::NONE);
+    connectionStatusListBox.add_css_class("boxed-list");
+    adw_preferences_group_add(connectionStatusGroupType, GTK_WIDGET(connectionStatusListBox.gobj()));
 
     statusCircle.set_draw_func(sigc::mem_fun(*this, &ConnectionStatusWidget::on_status_circle_draw));
     statusCircle.set_content_height(20);
@@ -32,14 +43,113 @@ void ConnectionStatusWidget::prep_widget() {
     statusLabel.set_margin_start(10);
     statusLabel.set_valign(Gtk::Align::CENTER);
     statusBox.append(statusLabel);
+    statusBox.set_margin(10);
 
-    statusBox.set_halign(Gtk::Align::CENTER);
-    mainBox.append(statusBox);
+    connectionStatusListBox.append(statusBox);
+
+    // Versions
+    versionGroup = adw_preferences_group_new();
+    gtk_widget_set_margin_top(versionGroup, 20);
+    AdwPreferencesGroup* versionGroupType = ADW_PREFERENCES_GROUP(versionGroup);
+    adw_preferences_group_set_title(versionGroupType, "Version");
+    mainBox.append(*Glib::wrap(versionGroup));
+
+    versionListBox.set_selection_mode(Gtk::SelectionMode::NONE);
+    versionListBox.add_css_class("boxed-list");
+    adw_preferences_group_add(versionGroupType, GTK_WIDGET(versionListBox.gobj()));
+
+    // Connections
+    connectionGroup = adw_preferences_group_new();
+    gtk_widget_set_margin_top(connectionGroup, 20);
+    AdwPreferencesGroup* connectionGroupType = ADW_PREFERENCES_GROUP(connectionGroup);
+    adw_preferences_group_set_title(connectionGroupType, "Connection");
+    mainBox.append(*Glib::wrap(connectionGroup));
+
+    connectionListBox.set_selection_mode(Gtk::SelectionMode::NONE);
+    connectionListBox.add_css_class("boxed-list");
+    adw_preferences_group_add(connectionGroupType, GTK_WIDGET(connectionListBox.gobj()));
+
+    // Storage
+    storageGroup = adw_preferences_group_new();
+    gtk_widget_set_margin_top(storageGroup, 20);
+    AdwPreferencesGroup* storageGroupType = ADW_PREFERENCES_GROUP(storageGroup);
+    adw_preferences_group_set_title(storageGroupType, "Storage");
+    mainBox.append(*Glib::wrap(storageGroup));
+
+    storageListBox.set_selection_mode(Gtk::SelectionMode::NONE);
+    storageListBox.add_css_class("boxed-list");
+    adw_preferences_group_add(storageGroupType, GTK_WIDGET(storageListBox.gobj()));
+
+    storageHeaderLabel.set_label("Usage");
+    storageHeaderLabel.add_css_class("subtitle");
+    storageHeaderLabel.set_halign(Gtk::Align::START);
+    storageBox.append(storageHeaderLabel);
+
+    storageProfessBar.add_css_class("storage-pgb");
+    storageProfessBar.set_margin_top(5);
+    storageBox.append(storageProfessBar);
+
+    storageUsageLabel.set_margin_top(10);
+    storageBox.append(storageUsageLabel);
+
+    storageBox.set_margin(10);
+    storageListBox.append(storageBox);
+
+    // Content
+    contentGroup = adw_preferences_group_new();
+    gtk_widget_set_margin_top(contentGroup, 20);
+    AdwPreferencesGroup* contentGroupType = ADW_PREFERENCES_GROUP(contentGroup);
+    adw_preferences_group_set_title(contentGroupType, "Storage");
+    mainBox.append(*Glib::wrap(contentGroup));
+
+    contentListBox.set_selection_mode(Gtk::SelectionMode::NONE);
+    contentListBox.add_css_class("boxed-list");
+    adw_preferences_group_add(contentGroupType, GTK_WIDGET(contentListBox.gobj()));
+
+    contentOriginRow = adw_action_row_new();
+    AdwActionRow* contentOriginRowType = ADW_ACTION_ROW(contentOriginRow);
+    gtk_widget_add_css_class(contentOriginRow, "property");
+    adw_action_row_set_subtitle_selectable(contentOriginRowType, true);
+    adw_preferences_row_set_title(ADW_PREFERENCES_ROW(contentOriginRow), "Origin");
+    contentListBox.append(*Glib::wrap(contentOriginRow));
+
+    contentPathPrefixRow = adw_action_row_new();
+    AdwActionRow* contentPathPrefixRowType = ADW_ACTION_ROW(contentPathPrefixRow);
+    gtk_widget_add_css_class(contentPathPrefixRow, "property");
+    adw_action_row_set_subtitle_selectable(contentPathPrefixRowType, true);
+    adw_preferences_row_set_title(ADW_PREFERENCES_ROW(contentPathPrefixRow), "Path Prefix");
+    contentListBox.append(*Glib::wrap(contentPathPrefixRow));
 
     update_status();
 }
 
+std::string ConnectionStatusWidget::to_unit_string(size_t byteCount) {
+    std::string unit = "B";
+    double unitVal = static_cast<double>(byteCount);
+    if (unitVal >= 1024) {
+        unitVal /= 1024;
+        unit = "KB";
+    }
+
+    if (unitVal >= 1024) {
+        unitVal /= 1024;
+        unit = "MB";
+    }
+
+    if (unitVal >= 1024) {
+        unitVal /= 1024;
+        unit = "GB";
+    }
+
+    if (unitVal >= 1024) {
+        unitVal /= 1024;
+        unit = "TB";
+    }
+    return fmt::format("{} {}", std::round(unitVal * 100) / 100, unit);
+}
+
 void ConnectionStatusWidget::update_status() {
+    // Connectivity status
     const std::chrono::system_clock::time_point lastSuccessfulConnection = connectionStatus.get_last_successful_connection();
     switch (status) {
         case backend::pulp::core::ConnectionStatus::Status::DISCONNECTED:
@@ -69,6 +179,33 @@ void ConnectionStatusWidget::update_status() {
         default:
             assert(false);  // should not happen
             break;
+    }
+
+    std::optional<backend::pulp::core::StatusResponse> response = connectionStatus.get_last_connection_response();
+
+    // Version
+    gtk_widget_set_visible(versionGroup, response != std::nullopt);
+    if (response) {}
+
+    // Connection
+    gtk_widget_set_visible(connectionGroup, response != std::nullopt);
+    if (response) {}
+
+    // Storage
+    gtk_widget_set_visible(storageGroup, response != std::nullopt);
+    if (response) {
+        const double fraction = static_cast<double>(response->storage.used) / static_cast<double>(response->storage.total);
+        storageProfessBar.set_fraction(fraction);
+        storageProfessBar.set_text(fmt::format("Storage is {} full.", fraction * 100));
+
+        storageUsageLabel.set_text(fmt::format("{} ({}%) used out of {} - {} free", to_unit_string(response->storage.used), std::round(fraction * 100), to_unit_string(response->storage.total), to_unit_string(response->storage.free)));
+    }
+
+    // Content
+    gtk_widget_set_visible(contentGroup, response != std::nullopt);
+    if (response) {
+        adw_action_row_set_subtitle(ADW_ACTION_ROW(contentOriginRow), response->contentSettings.origin.c_str());
+        adw_action_row_set_subtitle(ADW_ACTION_ROW(contentPathPrefixRow), response->contentSettings.pathPrefix.c_str());
     }
 }
 

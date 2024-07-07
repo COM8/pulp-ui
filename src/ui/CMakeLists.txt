@@ -14,4 +14,4 @@ set(RESOURCE_DIR ${RESOURCE_DIR} PARENT_SCOPE)
 set(RESOURCE_DEPS ${RESOURCE_DEPS} PARENT_SCOPE)
 
 target_link_libraries(ui PUBLIC PkgConfig::GTKMM ${ADWAITA_LIBRARIES} nlohmann_json::nlohmann_json ui_windows
-    PRIVATE logger)
+    PRIVATE logger ui::utils)

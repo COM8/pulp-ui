@@ -24,8 +24,7 @@ void SettingsWidget::prep_widget() {
     // Save:
     Gtk::Button* saveBtn = Gtk::make_managed<Gtk::Button>("Save");
     saveBtn->signal_clicked().connect(sigc::mem_fun(*this, &SettingsWidget::on_save_clicked));
-    Glib::RefPtr<Gtk::StyleContext> styleCtx = saveBtn->get_style_context();
-    styleCtx->add_class("suggested-action");
+    saveBtn->add_css_class("suggested-action");
     saveBtn->set_halign(Gtk::Align::END);
     saveBtn->set_margin_top(10);
     saveBtn->set_tooltip_text("Save settings");

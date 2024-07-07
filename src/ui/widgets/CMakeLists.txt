@@ -13,4 +13,4 @@ target_sources(ui_widgets PRIVATE SettingsWidget.cpp
     FILES ${CMAKE_CURRENT_SOURCE_DIR}/SettingsWidget.hpp)
 
 target_link_libraries(ui_widgets PUBLIC PkgConfig::GTKMM
-    PRIVATE logger backend::storage ui::utils)
+    PRIVATE logger backend::storage)

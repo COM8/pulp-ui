@@ -1,5 +1,6 @@
 #include "MainWindow.hpp"
 #include <adwaita.h>
+#include <gdkmm/display.h>
 #include <gdkmm/enums.h>
 #include <giomm/menu.h>
 #include <giomm/menuitem.h>
