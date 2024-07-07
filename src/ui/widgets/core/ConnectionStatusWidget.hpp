@@ -5,19 +5,19 @@
 #include <gtkmm/scrolledwindow.h>
 
 namespace ui::widgets::core {
-class ConnectivityWidget : public Gtk::ScrolledWindow {
+class ConnectionStatusWidget : public Gtk::ScrolledWindow {
  private:
     backend::pulp::core::ConnectionStatus connectionStatus{};
 
  public:
-    ConnectivityWidget();
-    ConnectivityWidget(ConnectivityWidget&&) = delete;
-    ConnectivityWidget(const ConnectivityWidget&) = delete;
+    ConnectionStatusWidget();
+    ConnectionStatusWidget(ConnectionStatusWidget&&) = delete;
+    ConnectionStatusWidget(const ConnectionStatusWidget&) = delete;
 
-    ~ConnectivityWidget() override = default;
+    ~ConnectionStatusWidget() override = default;
 
-    ConnectivityWidget& operator=(ConnectivityWidget&&) = delete;
-    ConnectivityWidget& operator=(const ConnectivityWidget&) = delete;
+    ConnectionStatusWidget& operator=(ConnectionStatusWidget&&) = delete;
+    ConnectionStatusWidget& operator=(const ConnectionStatusWidget&) = delete;
 
  private:
     void prep_widget();

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ui/widgets/core/ConnectivityWidget.hpp"
+#include "ui/widgets/core/ConnectionStatusWidget.hpp"
 #include "ui/widgets/rpm/RepoListWidget.hpp"
 #include "ui/widgets/rpm/RpmListWidget.hpp"
 #include <gdkmm/enums.h>
@@ -21,7 +21,7 @@ class MainWindow : public Gtk::Window {
     Gtk::StackSidebar sidebar{};
     Gtk::Stack stack{};
 
-    widgets::core::ConnectivityWidget connectivityWidget{};
+    widgets::core::ConnectionStatusWidget connectionStatusWidget{};
     widgets::rpm::RpmListWidget rpmListWidget{};
     widgets::rpm::RepoListWidget repoListWidget{};
 

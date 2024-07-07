@@ -79,7 +79,7 @@ void MainWindow::prep_window() {
 }
 
 void MainWindow::prep_stack() {
-    Glib::RefPtr<Gtk::StackPage> connectivityPage = stack.add(connectivityWidget, "connectivity", "Connectivity");
+    Glib::RefPtr<Gtk::StackPage> connectivityPage = stack.add(connectionStatusWidget, "connectivity", "Connectivity");
     connectivityPage->set_icon_name("cloud-outline-thin-symbolic");
 
     Glib::RefPtr<Gtk::StackPage> rpmRepoListPage = stack.add(repoListWidget, "rpm-repo-list", "RPM Repositories");
