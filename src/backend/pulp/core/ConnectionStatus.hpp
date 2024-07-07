@@ -74,22 +74,22 @@ class ConnectionStatus {
         DISCONNECTED,
         // Connecting failed
         FAILED,
-        // We are in the process of attempting to connecting
-        CONNECTING,
         // We successfully connected
         CONNECTED
     };
 
  private:
     std::atomic<Status> status{Status::DISCONNECTED};
+    std::atomic<std::chrono::system_clock::time_point> lastSuccessfulConnection{std::chrono::system_clock::time_point::min()};
     std::atomic_bool shouldRun;
     std::unique_ptr<std::thread> connectionThread;
+
+    std::optional<StatusResponse> lastStatusResponse{std::nullopt};
+    std::optional<std::string> lastErrorMessage{std::nullopt};
 
  public:
     // Event handler:
     eventpp::CallbackList<void(Status)> statusChanged;
-    eventpp::CallbackList<void(const StatusResponse&)> onConnected;
-    eventpp::CallbackList<void(const std::string&)> onFailed;
 
     ConnectionStatus();
     ConnectionStatus(ConnectionStatus&&) = delete;
@@ -100,6 +100,9 @@ class ConnectionStatus {
     ConnectionStatus& operator=(const ConnectionStatus&) = delete;
 
     [[nodiscard]] Status get_status() const;
+    [[nodiscard]] std::chrono::system_clock::time_point get_last_successful_connection() const;
+    [[nodiscard]] std::optional<StatusResponse> get_last_connection_response() const;
+    [[nodiscard]] std::optional<std::string> get_last_error_message() const;
 
  private:
     void thread_run();

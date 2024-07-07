@@ -43,9 +43,7 @@ std::optional<StatusResponse> ConnectionStatus::check_connectivity() {
             errorMsg = fmt::format("Request failed with status code {}.", response.status_code);
         }
         SPDLOG_ERROR("{}", errorMsg);
-        if (onFailed) {
-            onFailed(errorMsg);
-        }
+        lastErrorMessage = errorMsg;
 
         return std::nullopt;
     }
@@ -64,13 +62,8 @@ void ConnectionStatus::thread_run() {
             continue;
         }
 
-        set_status(Status::CONNECTING);
-
         std::optional<StatusResponse> response = check_connectivity();
         if (response) {
-            if (onConnected) {
-                onConnected(*response);
-            }
             set_status(Status::CONNECTED);
         } else {
             set_status(Status::FAILED);
@@ -84,7 +77,24 @@ void ConnectionStatus::thread_run() {
     return status;
 }
 
+[[nodiscard]] std::chrono::system_clock::time_point ConnectionStatus::get_last_successful_connection() const {
+    return lastSuccessfulConnection;
+}
+
+[[nodiscard]] std::optional<StatusResponse> ConnectionStatus::get_last_connection_response() const {
+    return lastStatusResponse;
+}
+
+[[nodiscard]] std::optional<std::string> ConnectionStatus::get_last_error_message() const {
+    return lastErrorMessage;
+}
+
 void ConnectionStatus::set_status(Status newStatus) {
+    // Update the connection status time
+    if (newStatus == Status::CONNECTED) {
+        lastSuccessfulConnection = std::chrono::system_clock::now();
+    }
+
     if (status != newStatus) {
         status = newStatus;
 
@@ -187,9 +197,7 @@ std::optional<StatusResponse> ConnectionStatus::parse_response(const std::string
     } catch (nlohmann::json::parse_error& e) {
         const std::string errorMsg = fmt::format("Error parsing connection status from '{0}' with: {1}", response, e.what());
         SPDLOG_ERROR("{}", errorMsg);
-        if (onFailed) {
-            onFailed(errorMsg);
-        }
+        lastErrorMessage = errorMsg;
         return std::nullopt;
     }
 }

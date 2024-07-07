@@ -10,4 +10,4 @@ target_sources(ui_widgets_core PRIVATE ConnectionStatusWidget.cpp
     FILES ${CMAKE_CURRENT_SOURCE_DIR}/ConnectionStatusWidget.hpp)
 
 target_link_libraries(ui_widgets_core PUBLIC PkgConfig::GTKMM backend::pulp::core
-    PRIVATE logger)
+    PRIVATE logger fmt::fmt)
