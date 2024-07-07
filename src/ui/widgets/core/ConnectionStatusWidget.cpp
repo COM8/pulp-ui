@@ -1,6 +1,5 @@
 #include "ConnectionStatusWidget.hpp"
 #include "backend/pulp/core/ConnectionStatus.hpp"
-#include "fmt/format.h"
 #include "spdlog/fmt/bundled/core.h"
 #include <chrono>
 #include <cmath>
