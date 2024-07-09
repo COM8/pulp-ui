@@ -35,6 +35,12 @@ message(STATUS "=======================================================")
 pulp_ui_option(PULP_UI_STATIC_ANALYZE "Set to ON to enable the GCC 10 static analysis. If enabled, PULP_UI_ENABLE_LINTING has to be disabled." OFF)
 pulp_ui_option(PULP_UI_ENABLE_LINTING "Set to ON to enable clang linting. If enabled, PULP_UI_STATIC_ANALYZE has to be disabled." OFF)
 pulp_ui_option(PULP_UI_FLATPAK_BUILD "Set to ON in case it is built for flatpak." OFF)
+
+pulp_ui_option(PULP_UI_DEBUG_SANITIZER_FLAG_THREAD "Enables the ThreadSanitizer for debug builds." OFF)
+pulp_ui_option(PULP_UI_DEBUG_SANITIZER_FLAG_ADDR "Enables the AddressSanitizer for debug builds." OFF)
+pulp_ui_option(PULP_UI_DEBUG_SANITIZER_FLAG_LEAK "Enables the LeakSanitizer for debug builds." OFF)
+pulp_ui_option(PULP_UI_DEBUG_SANITIZER_FLAG_UB "Enables the UndefinedBehaviorSanitizer for debug builds." OFF)
+pulp_ui_option(PULP_UI_DEBUG_SANITIZER_FLAG_ALL "Enables all sanitizers for debug builds except the ThreadSanitizer since it is incompatible with the other sanitizers." OFF)
 message(STATUS "=======================================================")
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
