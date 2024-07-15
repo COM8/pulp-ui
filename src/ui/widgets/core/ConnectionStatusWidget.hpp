@@ -25,8 +25,11 @@ class ConnectionStatusWidget : public Gtk::ScrolledWindow {
     Gtk::Label statusLabel{};
     Gtk::Label statusDescriptionLabel{};
 
+    // Version
     Gtk::ListBox versionListBox{};
     GtkWidget* versionGroup{nullptr};
+
+    std::vector<GtkWidget*> versionRows{};
 
     // Connection
     Gtk::ListBox connectionListBox{};

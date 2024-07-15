@@ -184,7 +184,32 @@ void ConnectionStatusWidget::update_status() {
 
     // Version
     gtk_widget_set_visible(versionGroup, response != std::nullopt);
-    if (response) {}
+    if (response) {
+        // Remove version list boxes in case there are now less
+        while (response->versions.size() < versionRows.size()) {
+            versionListBox.remove(*Glib::wrap(versionRows.back()));
+            versionRows.pop_back();
+        }
+
+        // Add new ones until there are enough
+        while (response->versions.size() > versionRows.size()) {
+            GtkWidget* row = adw_action_row_new();
+            AdwActionRow* rowType = ADW_ACTION_ROW(row);
+            gtk_widget_add_css_class(row, "property");
+            adw_action_row_set_subtitle_selectable(rowType, true);
+            versionListBox.append(*Glib::wrap(row));
+            versionRows.emplace_back(row);
+        }
+
+        assert(response->versions.size() == versionRows.size());
+
+        // Update all rows
+        for (size_t i = 0; i < response->versions.size(); i++) {
+            adw_preferences_row_set_title(ADW_PREFERENCES_ROW(versionRows[i]), (response->versions[i].component + " - " + response->versions[i].package).c_str());
+            adw_action_row_set_subtitle(ADW_ACTION_ROW(versionRows[i]), response->versions[i].version.c_str());
+            gtk_widget_set_tooltip_text(versionRows[i], response->versions[i].module.c_str());
+        }
+    }
 
     // Connection
     gtk_widget_set_visible(connectionGroup, response != std::nullopt);
