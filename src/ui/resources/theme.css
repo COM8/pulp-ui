@@ -1,3 +1,11 @@
-.storage-pgb trough progress {
-    background: linear-gradient(to right, #3a944a 80%, #ed5b00 95%, #e62d42);
+.storage-pgb-ok trough progress {
+    background: #3a944a;
+}
+
+.storage-pgb-warn trough progress {
+    background: #ed5b00;
+}
+
+.storage-pgb-alert trough progress {
+    background: #e62d42;
 }

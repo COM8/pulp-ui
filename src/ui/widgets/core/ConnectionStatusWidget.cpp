@@ -68,6 +68,20 @@ void ConnectionStatusWidget::prep_widget() {
     connectionListBox.add_css_class("boxed-list");
     adw_preferences_group_add(connectionGroupType, GTK_WIDGET(connectionListBox.gobj()));
 
+    dbConnectionRow = adw_action_row_new();
+    AdwActionRow* dbConnectionRowType = ADW_ACTION_ROW(dbConnectionRow);
+    gtk_widget_add_css_class(dbConnectionRow, "property");
+    adw_action_row_set_subtitle_selectable(dbConnectionRowType, true);
+    adw_preferences_row_set_title(ADW_PREFERENCES_ROW(dbConnectionRow), "DB");
+    connectionListBox.append(*Glib::wrap(dbConnectionRow));
+
+    redisConnectionRow = adw_action_row_new();
+    AdwActionRow* redisConnectionRowType = ADW_ACTION_ROW(redisConnectionRow);
+    gtk_widget_add_css_class(redisConnectionRow, "property");
+    adw_action_row_set_subtitle_selectable(redisConnectionRowType, true);
+    adw_preferences_row_set_title(ADW_PREFERENCES_ROW(redisConnectionRow), "Redis");
+    connectionListBox.append(*Glib::wrap(redisConnectionRow));
+
     // Storage
     storageGroup = adw_preferences_group_new();
     gtk_widget_set_margin_top(storageGroup, 20);
@@ -84,7 +98,7 @@ void ConnectionStatusWidget::prep_widget() {
     storageHeaderLabel.set_halign(Gtk::Align::START);
     storageBox.append(storageHeaderLabel);
 
-    storageProfessBar.add_css_class("storage-pgb");
+    storageProfessBar.remove_css_class("storage-pgb-ok");
     storageProfessBar.set_margin_top(5);
     storageBox.append(storageProfessBar);
 
@@ -213,12 +227,41 @@ void ConnectionStatusWidget::update_status() {
 
     // Connection
     gtk_widget_set_visible(connectionGroup, response != std::nullopt);
-    if (response) {}
+    if (response) {
+        if (response->db.connected) {
+            adw_action_row_set_subtitle(ADW_ACTION_ROW(dbConnectionRow), "Connected");
+            gtk_widget_remove_css_class(dbConnectionRow, "error");
+            gtk_widget_add_css_class(dbConnectionRow, "success");
+        } else {
+            adw_action_row_set_subtitle(ADW_ACTION_ROW(dbConnectionRow), "Disconnected");
+            gtk_widget_remove_css_class(dbConnectionRow, "success");
+            gtk_widget_add_css_class(dbConnectionRow, "error");
+        }
+
+        if (response->redis.connected) {
+            adw_action_row_set_subtitle(ADW_ACTION_ROW(redisConnectionRow), "Connected");
+            gtk_widget_remove_css_class(redisConnectionRow, "error");
+            gtk_widget_add_css_class(redisConnectionRow, "success");
+        } else {
+            adw_action_row_set_subtitle(ADW_ACTION_ROW(redisConnectionRow), "Disconnected");
+            gtk_widget_remove_css_class(redisConnectionRow, "success");
+            gtk_widget_add_css_class(redisConnectionRow, "error");
+        }
+    }
 
     // Storage
     gtk_widget_set_visible(storageGroup, response != std::nullopt);
     if (response) {
         const double fraction = static_cast<double>(response->storage.used) / static_cast<double>(response->storage.total);
+
+        if (fraction < 0.8) {
+            storageProfessBar.add_css_class("storage-pgb-ok");
+        } else if (fraction < 0.95) {
+            storageProfessBar.add_css_class("storage-pgb-warn");
+        } else {
+            storageProfessBar.add_css_class("storage-pgb-alert");
+        }
+
         storageProfessBar.set_fraction(fraction);
         storageProfessBar.set_text(fmt::format("Storage is {} full.", fraction * 100));
 
