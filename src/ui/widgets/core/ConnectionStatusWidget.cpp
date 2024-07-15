@@ -112,7 +112,7 @@ void ConnectionStatusWidget::prep_widget() {
     contentGroup = adw_preferences_group_new();
     gtk_widget_set_margin_top(contentGroup, 20);
     AdwPreferencesGroup* contentGroupType = ADW_PREFERENCES_GROUP(contentGroup);
-    adw_preferences_group_set_title(contentGroupType, "Storage");
+    adw_preferences_group_set_title(contentGroupType, "Content");
     mainBox.append(*Glib::wrap(contentGroup));
 
     contentListBox.set_selection_mode(Gtk::SelectionMode::NONE);
