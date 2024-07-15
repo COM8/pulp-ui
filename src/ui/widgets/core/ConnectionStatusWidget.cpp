@@ -69,16 +69,12 @@ void ConnectionStatusWidget::prep_widget() {
     adw_preferences_group_add(connectionGroupType, GTK_WIDGET(connectionListBox.gobj()));
 
     dbConnectionRow = adw_action_row_new();
-    AdwActionRow* dbConnectionRowType = ADW_ACTION_ROW(dbConnectionRow);
     gtk_widget_add_css_class(dbConnectionRow, "property");
-    adw_action_row_set_subtitle_selectable(dbConnectionRowType, true);
     adw_preferences_row_set_title(ADW_PREFERENCES_ROW(dbConnectionRow), "DB");
     connectionListBox.append(*Glib::wrap(dbConnectionRow));
 
     redisConnectionRow = adw_action_row_new();
-    AdwActionRow* redisConnectionRowType = ADW_ACTION_ROW(redisConnectionRow);
     gtk_widget_add_css_class(redisConnectionRow, "property");
-    adw_action_row_set_subtitle_selectable(redisConnectionRowType, true);
     adw_preferences_row_set_title(ADW_PREFERENCES_ROW(redisConnectionRow), "Redis");
     connectionListBox.append(*Glib::wrap(redisConnectionRow));
 
