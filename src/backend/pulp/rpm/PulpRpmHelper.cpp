@@ -28,8 +28,10 @@ RpmPackage RpmPackage::from_json(const nlohmann::json& j) {
     parse_to(j, "name", package.name);
     parse_to(j, "release", package.release);
     parse_to(j, "summary", package.summary);
+    parse_to(j, "url", package.url);
     parse_to(j, "description", package.description);
     parse_to(j, "version", package.version);
+    parse_to(j, "rpm_vendor", package.vendor);
 
     parse_to(j, "size_package", package.sizeRpm);
     parse_to(j, "size_installed", package.sizeInstalled);

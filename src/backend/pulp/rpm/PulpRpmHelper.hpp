@@ -13,6 +13,8 @@ struct RpmPackage {
     std::string version;
     std::string release;
     std::string summary;
+    std::string url;
+    std::string vendor;
     std::string description;
     std::string license;
     std::string group;

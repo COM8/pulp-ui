@@ -7,4 +7,5 @@ set(RESOURCE_DEPS ${CMAKE_CURRENT_SOURCE_DIR}/theme.css
     ${CMAKE_CURRENT_SOURCE_DIR}/icons/scalable/actions/cloud-outline-thin-symbolic.svg
     ${CMAKE_CURRENT_SOURCE_DIR}/icons/scalable/actions/list-compact-symbolic.svg
     ${CMAKE_CURRENT_SOURCE_DIR}/icons/scalable/actions/package-x-generic-symbolic.svg
+    ${CMAKE_CURRENT_SOURCE_DIR}/icons/scalable/actions/update-symbolic.svg
     PARENT_SCOPE)

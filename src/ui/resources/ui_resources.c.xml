@@ -6,5 +6,6 @@
     <file preprocess="xml-stripblanks">icons/scalable/actions/cloud-outline-thin-symbolic.svg</file>
     <file preprocess="xml-stripblanks">icons/scalable/actions/list-compact-symbolic.svg</file>
     <file preprocess="xml-stripblanks">icons/scalable/actions/package-x-generic-symbolic.svg</file>
+    <file preprocess="xml-stripblanks">icons/scalable/actions/update-symbolic.svg</file>
   </gresource>
 </gresources>
