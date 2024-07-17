@@ -1,4 +1,6 @@
 #include "RpmListWidget.hpp"
+#include "backend/pulp/rpm/PulpRpmHelper.hpp"
+#include "backend/storage/Settings.hpp"
 #include <gtkmm/scrolledwindow.h>
 #include <spdlog/spdlog.h>
 
@@ -8,6 +10,8 @@ RpmListWidget::RpmListWidget() {
 }
 
 void RpmListWidget::prep_widget() {
+    const backend::storage::Settings* settings = backend::storage::get_settings_instance();
+    (void) backend::pulp::rpm::get_packages(settings->data.pulp);
 }
 
 //-----------------------------Events:-----------------------------

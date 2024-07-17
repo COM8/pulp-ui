@@ -12,4 +12,4 @@ target_sources(ui_widgets_rpm PRIVATE RpmListWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/RepoListWidget.hpp)
 
 target_link_libraries(ui_widgets_rpm PUBLIC PkgConfig::GTKMM
-    PRIVATE logger backend::pulp)
+    PRIVATE logger backend::pulp backend::pulp::rpm)

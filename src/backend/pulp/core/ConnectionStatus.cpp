@@ -186,16 +186,21 @@ StatusResponse StatusResponse::from_json(const nlohmann::json& j) {
 }
 
 std::optional<StatusResponse> ConnectionStatus::parse_response(const std::string& response) {
+    std::string errorMsg;
     try {
         nlohmann::json j = nlohmann::json::parse(response);
         return std::make_optional<StatusResponse>(StatusResponse::from_json(j));
 
     } catch (nlohmann::json::parse_error& e) {
-        const std::string errorMsg = fmt::format("Error parsing connection status from '{0}' with: {1}", response, e.what());
-        SPDLOG_ERROR("{}", errorMsg);
-        lastErrorMessage = errorMsg;
-        return std::nullopt;
+        errorMsg = fmt::format("JSON error parsing connection status from '{0}' with: {1}", response, e.what());
+    } catch (std::runtime_error& e) {
+        errorMsg = fmt::format("General error parsing connection status from '{0}' with: {1}", response, e.what());
+    } catch (...) {
+        errorMsg = fmt::format("Unknown error parsing connection status from '{0}'.", response);
     }
+    SPDLOG_ERROR("{}", errorMsg);
+    lastErrorMessage = errorMsg;
+    return std::nullopt;
 }
 
 }  // namespace backend::pulp::core
