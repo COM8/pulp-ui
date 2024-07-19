@@ -1,4 +1,7 @@
 #include "UiUtils.hpp"
+#include <cstddef>
+#include <string>
+#include <fmt/core.h>
 #include <spdlog/spdlog.h>
 
 namespace ui {
@@ -16,5 +19,30 @@ Glib::RefPtr<Gdk::Pixbuf> scale_image(const Glib::RefPtr<Gdk::Pixbuf>& pixBuf, d
     int width = static_cast<int>(std::round(static_cast<double>(pixBuf->get_width()) * factor));
     int height = static_cast<int>(std::round(static_cast<double>(pixBuf->get_height()) * factor));
     return pixBuf->scale_simple(width, height, Gdk::InterpType::BILINEAR);
+}
+
+std::string to_unit_string(size_t byteCount) {
+    std::string unit = "B";
+    double unitVal = static_cast<double>(byteCount);
+    if (unitVal >= 1024) {
+        unitVal /= 1024;
+        unit = "KB";
+    }
+
+    if (unitVal >= 1024) {
+        unitVal /= 1024;
+        unit = "MB";
+    }
+
+    if (unitVal >= 1024) {
+        unitVal /= 1024;
+        unit = "GB";
+    }
+
+    if (unitVal >= 1024) {
+        unitVal /= 1024;
+        unit = "TB";
+    }
+    return fmt::format("{} {}", std::round(unitVal * 100) / 100, unit);
 }
 }  // namespace ui

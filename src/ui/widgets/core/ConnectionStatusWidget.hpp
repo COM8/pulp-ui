@@ -69,7 +69,6 @@ class ConnectionStatusWidget : public Gtk::ScrolledWindow {
  private:
     void prep_widget();
     void update_status();
-    static std::string to_unit_string(size_t byteCount);
 
     //-----------------------------Events:-----------------------------
     void on_connection_status_changed(backend::pulp::core::ConnectionStatus::Status status);

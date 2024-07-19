@@ -8,6 +8,7 @@
 #include <gtkmm/enums.h>
 #include <gtkmm/listbox.h>
 #include <gtkmm/scrolledwindow.h>
+#include <gtkmm/searchentry.h>
 
 namespace ui::widgets::rpm {
 class RpmListWidget : public Gtk::ScrolledWindow {
@@ -16,9 +17,16 @@ class RpmListWidget : public Gtk::ScrolledWindow {
 
     Gtk::Box toolbarBox{Gtk::Orientation::HORIZONTAL};
     Gtk::Button refreshBtn{};
+    Gtk::Button uploadBtn{};
+    Gtk::Button filterBtn{};
+    Gtk::Button sortBtn{};
+
+    Gtk::SearchEntry searchEntry{};
 
     std::vector<RpmPackageWidget> packageRows{};
     Gtk::ListBox packagesList{};
+
+    bool sortAscending{true};
 
  public:
     RpmListWidget();
@@ -34,5 +42,9 @@ class RpmListWidget : public Gtk::ScrolledWindow {
     void update_packages();
 
     //-----------------------------Events:-----------------------------
+    void on_refresh_clicked();
+    void on_upload_clicked();
+    void on_filter_clicked();
+    void on_sort_clicked();
 };
 }  // namespace ui::widgets::rpm

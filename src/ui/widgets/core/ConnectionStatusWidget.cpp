@@ -1,6 +1,7 @@
 #include "ConnectionStatusWidget.hpp"
 #include "backend/pulp/core/ConnectionStatus.hpp"
 #include "spdlog/fmt/bundled/core.h"
+#include "ui/utils/UiUtils.hpp"
 #include <chrono>
 #include <cmath>
 #include <adwaita.h>
@@ -132,31 +133,6 @@ void ConnectionStatusWidget::prep_widget() {
     update_status();
 }
 
-std::string ConnectionStatusWidget::to_unit_string(size_t byteCount) {
-    std::string unit = "B";
-    double unitVal = static_cast<double>(byteCount);
-    if (unitVal >= 1024) {
-        unitVal /= 1024;
-        unit = "KB";
-    }
-
-    if (unitVal >= 1024) {
-        unitVal /= 1024;
-        unit = "MB";
-    }
-
-    if (unitVal >= 1024) {
-        unitVal /= 1024;
-        unit = "GB";
-    }
-
-    if (unitVal >= 1024) {
-        unitVal /= 1024;
-        unit = "TB";
-    }
-    return fmt::format("{} {}", std::round(unitVal * 100) / 100, unit);
-}
-
 void ConnectionStatusWidget::update_status() {
     // Connectivity status
     const std::chrono::system_clock::time_point lastSuccessfulConnection = connectionStatus.get_last_successful_connection();
@@ -166,14 +142,14 @@ void ConnectionStatusWidget::update_status() {
             if (lastSuccessfulConnection == std::chrono::system_clock::time_point::min()) {
                 statusBox.set_tooltip_text("There wasn't yet a successful connection!");
             } else {
-                statusBox.set_tooltip_text(fmt::format("Last successful connection: {:%T}", lastSuccessfulConnection));
+                statusBox.set_tooltip_text(fmt::format("Last successful connection: {:%T %Z}", std::chrono::floor<std::chrono::seconds>(lastSuccessfulConnection)));
             }
             break;
 
         case backend::pulp::core::ConnectionStatus::Status::CONNECTED:
             statusLabel.set_text("Connected");
             assert(lastSuccessfulConnection != std::chrono::system_clock::time_point::min());
-            statusBox.set_tooltip_text(fmt::format("Last successful connection: {:%T}", lastSuccessfulConnection));
+            statusBox.set_tooltip_text(fmt::format("Last successful connection: {:%T %Z}", std::chrono::floor<std::chrono::seconds>(lastSuccessfulConnection)));
             break;
 
         case backend::pulp::core::ConnectionStatus::Status::FAILED:
@@ -181,7 +157,7 @@ void ConnectionStatusWidget::update_status() {
             if (lastSuccessfulConnection == std::chrono::system_clock::time_point::min()) {
                 statusBox.set_tooltip_text(fmt::format("There wasn't yet a successful connection!\nMessage: {}", *connectionStatus.get_last_error_message()));
             } else {
-                statusBox.set_tooltip_text(fmt::format("Last successful connection: {:%T}\nMessage: {}", lastSuccessfulConnection, *connectionStatus.get_last_error_message()));
+                statusBox.set_tooltip_text(fmt::format("Last successful connection: {:%T %Z}\nMessage: {}", std::chrono::floor<std::chrono::seconds>(lastSuccessfulConnection), *connectionStatus.get_last_error_message()));
             }
             break;
 
@@ -261,7 +237,7 @@ void ConnectionStatusWidget::update_status() {
         storageProfessBar.set_fraction(fraction);
         storageProfessBar.set_text(fmt::format("Storage is {} full.", fraction * 100));
 
-        storageUsageLabel.set_text(fmt::format("{} ({}%) used out of {} - {} free", to_unit_string(response->storage.used), std::round(fraction * 100), to_unit_string(response->storage.total), to_unit_string(response->storage.free)));
+        storageUsageLabel.set_text(fmt::format("{} ({}%) used out of {} - {} free", ::ui::to_unit_string(response->storage.used), std::round(fraction * 100), to_unit_string(response->storage.total), to_unit_string(response->storage.free)));
     }
 
     // Content

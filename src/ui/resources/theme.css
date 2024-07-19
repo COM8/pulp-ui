@@ -9,3 +9,23 @@
 .storage-pgb-alert trough progress {
     background: #e62d42;
 }
+
+.tag {
+    border-radius: 9999px;
+    padding: 2px 4px;
+}
+
+.tag-arch {
+    border: 2px solid @blue_5;
+    background-color: alpha(@blue_5, 0.3);
+}
+
+.tag-license {
+    border: 2px solid @green_5;
+    background-color: alpha(@green_5, 0.3);
+}
+
+.tag-group {
+    border: 2px solid @purple_5;
+    background-color: alpha(@purple_5, 0.3);
+}

@@ -10,4 +10,4 @@ target_sources(ui_utils PRIVATE UiUtils.cpp
     FILES ${CMAKE_CURRENT_SOURCE_DIR}/UiUtils.hpp)
 
 target_link_libraries(ui_utils PUBLIC PkgConfig::GTKMM
-    PRIVATE logger)
+    PRIVATE logger fmt::fmt)
