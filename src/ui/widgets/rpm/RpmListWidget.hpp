@@ -19,7 +19,6 @@ class RpmListWidget : public Gtk::ScrolledWindow {
     Gtk::Box toolbarBox{Gtk::Orientation::HORIZONTAL};
     Gtk::Button refreshBtn{};
     Gtk::Button uploadBtn{};
-    Gtk::Button filterBtn{};
     Gtk::Button sortBtn{};
 
     Gtk::SearchEntry searchEntry{};
@@ -48,7 +47,6 @@ class RpmListWidget : public Gtk::ScrolledWindow {
     //-----------------------------Events:-----------------------------
     void on_refresh_clicked();
     void on_upload_clicked();
-    void on_filter_clicked();
     void on_sort_clicked();
     void on_search_changed();
 };

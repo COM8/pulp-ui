@@ -7,7 +7,6 @@
     <file preprocess="xml-stripblanks">icons/scalable/actions/list-compact-symbolic.svg</file>
     <file preprocess="xml-stripblanks">icons/scalable/actions/package-x-generic-symbolic.svg</file>
     <file preprocess="xml-stripblanks">icons/scalable/actions/update-symbolic.svg</file>
-    <file preprocess="xml-stripblanks">icons/scalable/actions/funnel-outline-symbolic.svg</file>
     <file preprocess="xml-stripblanks">icons/scalable/actions/share-symbolic.svg</file>
     <file preprocess="xml-stripblanks">icons/scalable/actions/view-sort-ascending-symbolic.svg</file>
     <file preprocess="xml-stripblanks">icons/scalable/actions/view-sort-descending-symbolic.svg</file>

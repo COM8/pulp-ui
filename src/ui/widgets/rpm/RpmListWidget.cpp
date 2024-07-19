@@ -31,11 +31,6 @@ void RpmListWidget::prep_widget() {
     sortBtn.signal_clicked().connect(sigc::mem_fun(*this, &RpmListWidget::on_sort_clicked));
     toolbarBox.append(sortBtn);
 
-    filterBtn.set_icon_name("funnel-outline-symbolic");
-    filterBtn.set_tooltip_text("Filter by");
-    filterBtn.signal_clicked().connect(sigc::mem_fun(*this, &RpmListWidget::on_filter_clicked));
-    toolbarBox.append(filterBtn);
-
     refreshBtn.set_icon_name("update-symbolic");
     refreshBtn.set_tooltip_text("Refresh RPM list");
     refreshBtn.set_halign(Gtk::Align::END);
@@ -76,10 +71,18 @@ void RpmListWidget::filter_packages() {
 
     std::vector<const backend::pulp::rpm::RpmPackage*> packagesFiltered{};
 
+    // Filter
     for (const backend::pulp::rpm::RpmPackage& package : packages) {
         if (filterSv.empty() || ui::to_lower_clean(package.name).find(filterSv) != std::string::npos || ui::to_lower_clean(package.vendor).find(filterSv) != std::string::npos) {
             packagesFiltered.emplace_back(&package);
         }
+    }
+
+    // Sort
+    if (sortAscending) {
+        std::sort(packagesFiltered.begin(), packagesFiltered.end(), [](const backend::pulp::rpm::RpmPackage* a, const backend::pulp::rpm::RpmPackage* b) { return a->name < b->name; });
+    } else {
+        std::sort(packagesFiltered.begin(), packagesFiltered.end(), [](const backend::pulp::rpm::RpmPackage* a, const backend::pulp::rpm::RpmPackage* b) { return a->name > b->name; });
     }
 
     // Remove version list boxes in case there are now less
@@ -110,12 +113,10 @@ void RpmListWidget::on_refresh_clicked() {
 void RpmListWidget::on_upload_clicked() {
 }
 
-void RpmListWidget::on_filter_clicked() {
-}
-
 void RpmListWidget::on_sort_clicked() {
     sortAscending = !sortAscending;
     sortBtn.set_icon_name(sortAscending ? "view-sort-ascending-symbolic" : "view-sort-descending-symbolic");
+    filter_packages();
 }
 
 void RpmListWidget::on_search_changed() {

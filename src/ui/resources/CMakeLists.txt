@@ -8,7 +8,6 @@ set(RESOURCE_DEPS ${CMAKE_CURRENT_SOURCE_DIR}/theme.css
     ${CMAKE_CURRENT_SOURCE_DIR}/icons/scalable/actions/list-compact-symbolic.svg
     ${CMAKE_CURRENT_SOURCE_DIR}/icons/scalable/actions/package-x-generic-symbolic.svg
     ${CMAKE_CURRENT_SOURCE_DIR}/icons/scalable/actions/update-symbolic.svg
-    ${CMAKE_CURRENT_SOURCE_DIR}/icons/scalable/actions/funnel-outline-symbolic.svg
     ${CMAKE_CURRENT_SOURCE_DIR}/icons/scalable/actions/share-symbolic.svg
     ${CMAKE_CURRENT_SOURCE_DIR}/icons/scalable/actions/view-sort-ascending-symbolic.svg
     ${CMAKE_CURRENT_SOURCE_DIR}/icons/scalable/actions/view-sort-descending-symbolic.svg
