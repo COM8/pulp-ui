@@ -56,10 +56,10 @@ GtkWidget* RpmPackageWidget::get_widget() const {
 
 void RpmPackageWidget::set_package(const backend::pulp::rpm::RpmPackage& package) {
     adw_preferences_row_set_title(ADW_PREFERENCES_ROW(expanderRow), package.name.c_str());
-    adw_expander_row_set_subtitle(ADW_EXPANDER_ROW(expanderRow), (package.version + "-" + package.release).c_str());
+    adw_expander_row_set_subtitle(ADW_EXPANDER_ROW(expanderRow), (package.version + "-" + package.release + ", " + package.vendor).c_str());
 
     const std::string sizeString = fmt::format("RPM: {0}, Installed: {1}", ::ui::to_unit_string(package.sizeRpm), ::ui::to_unit_string(package.sizeInstalled));
-    moreInfoLabel.set_markup(fmt::format("<b>Description:</b>\n{0}\n\n<b>URL:</b>\n{1}\n\n<b>Vendor:</b>\n{2}\n\n<b>Build:</b>\n{3}\n\n<b>Size:</b>\n{4}", package.description, package.url, package.vendor, fmt::format("{:%c %Z}", std::chrono::floor<std::chrono::seconds>(package.timeBuild)), sizeString));
+    moreInfoLabel.set_markup(fmt::format("<b>Description:</b>\n{0}\n\n<b>URL:</b>\n{1}\n\n<b>Build:</b>\n{2}\n\n<b>Size:</b>\n{3}", package.description, package.url, fmt::format("{:%c %Z}", std::chrono::floor<std::chrono::seconds>(package.timeBuild)), sizeString));
 
     archLabel.set_label(package.arch);
     licenseLabel.set_label(package.license);

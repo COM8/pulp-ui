@@ -1,6 +1,7 @@
 #include "RpmListWidget.hpp"
 #include "backend/pulp/rpm/PulpRpmHelper.hpp"
 #include "backend/storage/Settings.hpp"
+#include "ui/utils/UiUtils.hpp"
 #include "ui/widgets/rpm/RpmPackageWidget.hpp"
 #include <expected>
 #include <vector>
@@ -22,6 +23,7 @@ void RpmListWidget::prep_widget() {
     searchEntry.set_halign(Gtk::Align::FILL);
     searchEntry.set_hexpand(true);
     searchEntry.set_tooltip_text("Search for name or vendor");
+    searchEntry.signal_changed().connect(sigc::mem_fun(*this, &RpmListWidget::on_search_changed));
     toolbarBox.append(searchEntry);
 
     sortBtn.set_icon_name("view-sort-ascending-symbolic");
@@ -58,27 +60,45 @@ void RpmListWidget::prep_widget() {
 void RpmListWidget::update_packages() {
     const backend::storage::Settings* settings = backend::storage::get_settings_instance();
 
-    const std::expected<std::vector<backend::pulp::rpm::RpmPackage>, std::string> packages = backend::pulp::rpm::get_packages(settings->data.pulp);
+    const std::expected<std::vector<backend::pulp::rpm::RpmPackage>, std::string> packagesResult = backend::pulp::rpm::get_packages(settings->data.pulp);
 
-    if (packages) {
-        // Remove version list boxes in case there are now less
-        while (packages->size() < packageRows.size()) {
-            packagesList.remove(*Glib::wrap(packageRows.back().get_widget()));
-            packageRows.pop_back();
+    if (packagesResult) {
+        packages = *packagesResult;
+    }
+
+    filter_packages();
+}
+
+void RpmListWidget::filter_packages() {
+    const std::string filter = ui::to_lower_clean(searchEntry.get_text());
+    std::string_view filterSv = filter;
+    ui::trim(filterSv);
+
+    std::vector<const backend::pulp::rpm::RpmPackage*> packagesFiltered{};
+
+    for (const backend::pulp::rpm::RpmPackage& package : packages) {
+        if (filterSv.empty() || ui::to_lower_clean(package.name).find(filterSv) != std::string::npos || ui::to_lower_clean(package.vendor).find(filterSv) != std::string::npos) {
+            packagesFiltered.emplace_back(&package);
         }
+    }
 
-        // Add new ones until there are enough
-        while (packages->size() > packageRows.size()) {
-            packageRows.emplace_back();
-            packagesList.append(*Glib::wrap(packageRows.back().get_widget()));
-        }
+    // Remove version list boxes in case there are now less
+    while (packagesFiltered.size() < packageRows.size()) {
+        packagesList.remove(*Glib::wrap(packageRows.back().get_widget()));
+        packageRows.pop_back();
+    }
 
-        assert(packages->size() == packageRows.size());
+    // Add new ones until there are enough
+    while (packagesFiltered.size() > packageRows.size()) {
+        packageRows.emplace_back();
+        packagesList.append(*Glib::wrap(packageRows.back().get_widget()));
+    }
 
-        // Update all rows
-        for (size_t i = 0; i < packages->size(); i++) {
-            packageRows[i].set_package((*packages)[i]);
-        }
+    assert(packagesFiltered.size() == packageRows.size());
+
+    // Update all rows
+    for (size_t i = 0; i < packagesFiltered.size(); i++) {
+        packageRows[i].set_package(*(packagesFiltered[i]));
     }
 }
 
@@ -96,5 +116,9 @@ void RpmListWidget::on_filter_clicked() {
 void RpmListWidget::on_sort_clicked() {
     sortAscending = !sortAscending;
     sortBtn.set_icon_name(sortAscending ? "view-sort-ascending-symbolic" : "view-sort-descending-symbolic");
+}
+
+void RpmListWidget::on_search_changed() {
+    filter_packages();
 }
 }  // namespace ui::widgets::rpm

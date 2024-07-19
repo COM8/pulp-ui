@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <string>
+#include <string_view>
 #include <gtkmm.h>
 
 namespace ui {
@@ -14,4 +15,9 @@ Glib::RefPtr<Gdk::Pixbuf> scale_image(const Glib::RefPtr<Gdk::Pixbuf>& pixBuf, d
  * 1536 Byte -> 1.5KB
  **/
 std::string to_unit_string(size_t byteCount);
+
+void ltrim(std::string_view& s);
+void rtrim(std::string_view& s);
+std::string to_lower_clean(const std::string& s);
+void trim(std::string_view& s);
 }  // namespace ui

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RpmPackageWidget.hpp"
+#include "backend/pulp/rpm/PulpRpmHelper.hpp"
 #include <vector>
 #include <gtkmm.h>
 #include <gtkmm/box.h>
@@ -28,6 +29,8 @@ class RpmListWidget : public Gtk::ScrolledWindow {
 
     bool sortAscending{true};
 
+    std::vector<backend::pulp::rpm::RpmPackage> packages;
+
  public:
     RpmListWidget();
     RpmListWidget(RpmListWidget&&) = default;
@@ -40,11 +43,13 @@ class RpmListWidget : public Gtk::ScrolledWindow {
     void prep_widget();
 
     void update_packages();
+    void filter_packages();
 
     //-----------------------------Events:-----------------------------
     void on_refresh_clicked();
     void on_upload_clicked();
     void on_filter_clicked();
     void on_sort_clicked();
+    void on_search_changed();
 };
 }  // namespace ui::widgets::rpm
