@@ -9,5 +9,5 @@ target_sources(backend_pulp_rpm PRIVATE PulpRpmHelper.cpp
     BASE_DIRS ${PROJECT_SOURCE_DIR}/src
     FILES ${CMAKE_CURRENT_SOURCE_DIR}/PulpRpmHelper.hpp)
 
-target_link_libraries(backend_pulp_rpm PRIVATE logger cpr::cpr backend::storage fmt::fmt
+target_link_libraries(backend_pulp_rpm PRIVATE logger cpr::cpr backend::storage fmt::fmt date::date
     PUBLIC nlohmann_json::nlohmann_json)

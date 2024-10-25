@@ -8,6 +8,7 @@
 #include <nlohmann/json.hpp>
 #include <vector>
 #include <cpr/cpr.h>
+#include <date/date.h>
 #include <fmt/color.h>
 
 namespace backend::pulp::rpm {
@@ -41,6 +42,25 @@ RpmPackage RpmPackage::from_json(const nlohmann::json& j) {
     package.timeBuild = std::chrono::system_clock::from_time_t(static_cast<std::time_t>(timeBuild));
 
     return package;
+}
+
+RpmRepository RpmRepository::from_json(const nlohmann::json& j) {
+    RpmRepository repo{};
+
+    parse_to(j, "name", repo.name);
+    parse_to(j, "description", repo.description);
+    parse_to(j, "autopublish", repo.autoPublish);
+    parse_to(j, "metadata_signing_service", repo.metadataSigningServiceRef);
+    parse_to(j, "package_signing_service", repo.packageSigningServiceRef);
+    parse_to(j, "package_signing_fingerprint", repo.packageSigningFingerprint);
+    parse_to(j, "retain_repo_versions", repo.retainRepoVersions);
+    parse_to(j, "retain_package_versions", repo.retainPackageVersions);
+
+    uint64_t timeBuild{0};
+    parse_to(j, "time_build", timeBuild);
+    repo.timeBuild = std::chrono::system_clock::from_time_t(static_cast<std::time_t>(timeBuild));
+
+    return repo;
 }
 
 std::expected<std::vector<RpmPackage>, std::string> parse_response(const std::string& response) {
